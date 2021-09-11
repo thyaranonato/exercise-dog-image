@@ -6,7 +6,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      dados: '',
+      data: '',
     };
     this.fetchDogImage = this.fetchDogImage.bind(this);
   }
@@ -15,21 +15,34 @@ class App extends React.Component {
     this.fetchDogImage();
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.data.message.includes('terrier')) {
+      return false;
+    }
+    return true;
+  }
+
+  componentDidUpdate() {
+    localStorage.setItem('urlOfDogImage', this.state.data.message);
+    const racaDog = this.state.data.message.split('/')[4];
+    alert(racaDog);
+  }
+
   fetchDogImage() {
     fetch('https://dog.ceo/api/breeds/image/random')
       .then((response) => response.json())
-      .then((result) => this.setState({ dados: result }));
+      .then((result) => this.setState({ data: result }));
   }
 
   render() {
-    const { dados } = this.state;
-    if (dados === '') return 'Loading...';
+    const { data } = this.state;
+    if (data === '') return 'Loading...';
     return (
       <div className="App">
         <p>Dogs Image</p>
         <button type="button" onClick={ this.fetchDogImage }>New Dog!</button>
         <div>
-          <img src={ dados.message } alt="Dog Aleatório" />
+          <img src={ data.message } alt="Dog Aleatório" />
         </div>
       </div>
     );
